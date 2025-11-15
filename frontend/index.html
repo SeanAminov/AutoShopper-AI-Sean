@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,7 +9,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
 <style>
-    /* GLOBAL */
     * {
         margin: 0;
         padding: 0;
@@ -28,9 +28,8 @@
         width: 100%;
         padding: 22px 42px;
         display: flex;
-        justify-content: flex-start;
+        justify-content: space-between;
         align-items: center;
-        background: transparent;
         position: sticky;
         top: 0;
         z-index: 50;
@@ -40,10 +39,19 @@
     .brand {
         font-size: 26px;
         font-weight: 800;
-        letter-spacing: -0.5px;
         background: linear-gradient(135deg, #818cf8, #c084fc);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
+    }
+
+    .user-info {
+        font-size: 15px;
+        color: #c7d2fe;
+    }
+
+    .allergies-tag {
+        font-size: 13px;
+        color: #a5b4fc;
     }
 
     /* LAYOUT */
@@ -65,12 +73,11 @@
         overflow: hidden;
     }
 
-    /* Subtle glow */
     .left-box::before, .right-box::before {
         content: "";
         position: absolute;
-        width: 380px;
-        height: 380px;
+        width: 360px;
+        height: 360px;
         border-radius: 50%;
         background: radial-gradient(circle, rgba(124,58,237,0.22), transparent 70%);
         top: -160px;
@@ -79,11 +86,9 @@
         filter: blur(40px);
     }
 
-    /* HEADER TEXT */
     .title {
         font-size: 34px;
         font-weight: 800;
-        line-height: 1.25;
         margin-bottom: 16px;
     }
 
@@ -94,7 +99,6 @@
         line-height: 1.6;
     }
 
-    /* FORM INPUTS */
     textarea, input {
         width: 100%;
         padding: 16px;
@@ -104,7 +108,6 @@
         color: white;
         font-size: 15px;
         margin-bottom: 16px;
-        backdrop-filter: blur(10px);
         outline: none;
         transition: 0.2s;
     }
@@ -115,16 +118,15 @@
         box-shadow: 0 0 0 3px rgba(167,139,250,0.25);
     }
 
-    /* BUTTON */
     button {
         width: 100%;
         padding: 16px;
-        border: none;
         border-radius: 14px;
         background: linear-gradient(135deg, #6366f1, #a855f7);
         color: white;
-        font-weight: 700;
+        border: none;
         font-size: 16px;
+        font-weight: 700;
         cursor: pointer;
         transition: 0.25s;
         margin-top: 6px;
@@ -240,30 +242,31 @@
         background: #16a34a;
         transform: translateY(-2px);
     }
-
 </style>
 </head>
 
 <body>
 
+<!-- NAVBAR -->
 <div class="navbar">
     <div class="brand">Delivry</div>
+    <div class="user-info" id="userInfo"></div>
 </div>
 
 <div class="wrapper">
 
     <!-- LEFT PANEL -->
     <div class="left-box">
-        <div class="title">One prompt. A complete shopping flow.</div>
+        <div class="title">Smart, allergy-aware shopping</div>
         <div class="subtitle">
-            Describe what you want to buy. Delivry autonomously navigates the web,
-            evaluates items, checks delivery platforms, and prepares a ready-to-checkout order — all in real time.
+            Delivry automatically avoids foods that contain your allergens.  
+            Powered by real-time AI ingredient analysis.
         </div>
 
         <textarea id="prompt" rows="3"
         placeholder="Example: Find me a large iced matcha with oat milk under $12 near 45 Fremont St..."></textarea>
 
-        <input id="location" placeholder="Optional: Enter a specific location (default: 45 Fremont St, SF)" />
+        <input id="location" placeholder="Optional: Location override" />
 
         <button onclick="runAgent()">Run Autonomous Agent →</button>
 
@@ -292,19 +295,19 @@
             <div class="timeline-item" data-step="3">
                 <div class="tl-dot"></div>
                 <div class="tl-title">Match & compare</div>
-                <div class="tl-sub">Price, distance, ETA, ratings, quality</div>
+                <div class="tl-sub">Price, distance, ETA, ratings, allergens</div>
             </div>
 
             <div class="timeline-item" data-step="4">
                 <div class="tl-dot"></div>
-                <div class="tl-title">Build cart</div>
-                <div class="tl-sub">Configure item and prepare checkout</div>
+                <div class="tl-title">Filter unsafe items</div>
+                <div class="tl-sub">Exclude items containing allergens</div>
             </div>
 
             <div class="timeline-item" data-step="5">
                 <div class="tl-dot"></div>
                 <div class="tl-title">Return summary</div>
-                <div class="tl-sub">Structured JSON + checkout URL</div>
+                <div class="tl-sub">Safe item + checkout link</div>
             </div>
         </div>
 
@@ -313,6 +316,14 @@
 </div>
 
 <script>
+/* LOAD USER */
+const user = JSON.parse(localStorage.getItem("delivry_user"));
+if (!user) window.location.href = "signup.html";
+
+document.getElementById("userInfo").innerHTML = `
+    ${user.name} • <span class="allergies-tag">Allergies: ${user.allergies.join(", ") || "None"}</span>
+`;
+
 let stepsEls = Array.from(document.querySelectorAll(".timeline-item"));
 
 async function runAgent() {
@@ -325,7 +336,6 @@ async function runAgent() {
         return;
     }
 
-    // Reset timeline UI
     stepsEls.forEach(el => el.classList.remove("active"));
 
     const loading = document.getElementById("loading");
@@ -336,7 +346,6 @@ async function runAgent() {
 
     const API_URL = "http://127.0.0.1:8000/api/order";
 
-    // Timeline animation
     let step = 0;
     let stepInterval = setInterval(() => {
         if (step < stepsEls.length) {
@@ -351,7 +360,11 @@ async function runAgent() {
         const res = await fetch(API_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ prompt, location })
+            body: JSON.stringify({
+                prompt,
+                location,
+                allergies: user.allergies
+            })
         });
 
         const data = await res.json();

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Delivry — Login</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+    body {
+        margin: 0;
+        font-family: 'Inter', sans-serif;
+        background: radial-gradient(circle at 20% 20%, #1e1b4b 0%, #0f1020 60%, #050512 100%);
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+    }
+
+    .card {
+        width: 380px;
+        padding: 32px;
+        border-radius: 18px;
+        background: rgba(255,255,255,0.06);
+        border: 1px solid rgba(255,255,255,0.12);
+        backdrop-filter: blur(14px);
+    }
+
+    h1 {
+        font-size: 28px;
+        font-weight: 800;
+        margin-bottom: 10px;
+        background: linear-gradient(135deg, #818cf8, #c084fc);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    input {
+        width: 100%;
+        padding: 14px;
+        border-radius: 12px;
+        border: 1px solid rgba(255,255,255,0.15);
+        background: rgba(255,255,255,0.1);
+        color: white;
+        margin-bottom: 16px;
+        outline: none;
+        transition: 0.2s;
+    }
+
+    input:focus {
+        border-color: #a78bfa;
+        background: rgba(255,255,255,0.15);
+    }
+
+    button {
+        width: 100%;
+        padding: 14px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #6366f1, #a855f7);
+        color: white;
+        border: none;
+        font-weight: 700;
+        font-size: 16px;
+        cursor: pointer;
+        transition: 0.25s;
+    }
+
+    button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 32px rgba(167,139,250,0.4);
+    }
+</style>
+</head>
+
+<body>
+
+<div class="card">
+    <h1>Welcome back</h1>
+
+    <input id="email" placeholder="Email" />
+    <input id="password" type="password" placeholder="Password" />
+
+    <button onclick="login()">Log In →</button>
+</div>
+
+<script>
+function login() {
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
+
+    const user = JSON.parse(localStorage.getItem("delivry_user"));
+
+    if (!user) {
+        alert("No account found. Please sign up first.");
+        return;
+    }
+
+    if (user.email !== email || user.password !== password) {
+        alert("Incorrect email or password.");
+        return;
+    }
+
+    window.location.href = "dashboard.html";
+}
+</script>
+
+</body>
+</html>
