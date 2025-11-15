@@ -8,9 +8,8 @@
 <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
 
 <style>
-* {
-  box-sizing: border-box;
-}
+/* ====== GLOBAL ====== */
+* { box-sizing: border-box; }
 body {
   margin: 0;
   font-family: "Space Grotesk", system-ui, -apple-system, BlinkMacSystemFont;
@@ -23,6 +22,8 @@ canvas#bg {
   inset: 0;
   z-index: 0;
 }
+
+/* ====== LAYOUT ====== */
 .main-overlay {
   position: relative;
   z-index: 10;
@@ -65,6 +66,8 @@ canvas#bg {
   display: flex;
   flex-direction: column;
 }
+
+/* ====== LEFT PANEL ====== */
 .brand-row {
   display: flex;
   justify-content: space-between;
@@ -206,9 +209,7 @@ button.primary:disabled {
   font-size: 11px;
   color: #9ca3af;
 }
-.meta-chip span {
-  color: #e5e7eb;
-}
+.meta-chip span { color: #e5e7eb; }
 .status-line {
   margin-top: 16px;
   min-height: 22px;
@@ -235,7 +236,7 @@ button.primary:disabled {
   max-width: 100%;
 }
 
-/* Right panel */
+/* ====== RIGHT PANEL ====== */
 .timeline-title {
   font-size: 12px;
   text-transform: uppercase;
@@ -339,9 +340,7 @@ button.primary:disabled {
   font-size: 12px;
 }
 @media (max-width: 600px) {
-  .result-grid {
-    grid-template-columns: 1fr;
-  }
+  .result-grid { grid-template-columns: 1fr; }
 }
 .res-k {
   font-size: 11px;
@@ -383,9 +382,7 @@ button.primary:disabled {
   color: #fee2e2;
 }
 @media (max-width: 960px) {
-  .panel {
-    height: auto;
-  }
+  .panel { height: auto; }
 }
 </style>
 </head>
@@ -484,7 +481,9 @@ button.primary:disabled {
   </div>
 </div>
 
+<script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
 <script>
+/* ===== 3D BACKGROUND ===== */
 let scene, camera, renderer, shapes = [];
 
 function init3D() {
@@ -586,6 +585,7 @@ function animate() {
 window.addEventListener("resize", resizeRenderer);
 init3D();
 
+/* ===== AGENT UI LOGIC ===== */
 const stepsEls = Array.from(document.querySelectorAll(".step"));
 const statusTextEl = document.getElementById("statusText");
 const resultArea = document.getElementById("resultArea");
