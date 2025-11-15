@@ -1,121 +1,201 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Delivry — Dashboard</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-
-<style>
+  <meta charset="UTF-8" />
+  <title>Delivry – Profile</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-gradient: radial-gradient(circle at 10% 0%, #1f2937 0, #020617 55%, #02010a 100%);
+      --card-bg: rgba(15, 23, 42, 0.9);
+      --border-subtle: rgba(148, 163, 184, 0.4);
+      --accent: #6366f1;
+      --accent-2: #c084fc;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-        margin: 0;
-        font-family: 'Inter', sans-serif;
-        background: radial-gradient(circle at 20% 20%, #1e1b4b 0%, #0f1020 60%, #050512 100%);
-        color: white;
-        display: flex;
-        justify-content: center;
-        padding-top: 80px;
-        min-height: 100vh;
+      min-height: 100vh;
+      background: var(--bg-gradient);
+      font-family: "Inter", system-ui;
+      color: #f9fafb;
+      padding: 28px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
     }
-
     .card {
-        width: 600px;
-        padding: 40px;
-        border-radius: 22px;
-        background: rgba(255,255,255,0.06);
-        border: 1px solid rgba(255,255,255,0.12);
-        backdrop-filter: blur(14px);
+      width: 100%;
+      max-width: 880px;
+      border-radius: 24px;
+      background: var(--card-bg);
+      border: 1px solid var(--border-subtle);
+      padding: 28px 30px 24px;
+      box-shadow: 0 24px 70px rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(22px);
+      position: relative;
+      overflow: hidden;
     }
-
-    h1 {
-        font-size: 32px;
-        font-weight: 800;
-        margin-bottom: 20px;
-        background: linear-gradient(135deg, #818cf8, #c084fc);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(129,140,248,0.22), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(52,211,153,0.18), transparent 58%);
+      pointer-events: none;
     }
+    .card > * { position: relative; z-index: 1; }
 
-    .label {
-        font-size: 15px;
-        color: #d4d4d8;
+    .top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
     }
-
-    .allergy-box {
-        margin-top: 16px;
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
+    .title-block {
+      max-width: 480px;
     }
-
+    .title {
+      font-size: 26px;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+    .sub {
+      font-size: 13px;
+      color: #cbd5f5;
+    }
+    .pill {
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,253,0.7);
+      padding: 7px 12px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: #c7d2fe;
+      background: radial-gradient(circle at 0 0, rgba(15,23,42,0.92), rgba(15,23,42,0.8));
+    }
+    .section-title {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: #9ca3af;
+      margin-top: 18px;
+      margin-bottom: 6px;
+    }
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
     .tag {
-        padding: 8px 14px;
-        background: rgba(255,255,255,0.12);
-        border-radius: 999px;
-        border: 1px solid rgba(255,255,255,0.18);
-        font-size: 13px;
+      border-radius: 999px;
+      padding: 6px 11px;
+      font-size: 12px;
+      border: 1px solid rgba(148,163,184,0.65);
+      background: rgba(15,23,42,0.96);
     }
-
-    button {
-        width: 100%;
-        margin-top: 30px;
-        padding: 16px;
-        border-radius: 14px;
-        font-size: 16px;
-        font-weight: 700;
-        cursor: pointer;
-        border: none;
-        color: white;
-        background: linear-gradient(135deg, #6366f1, #a855f7);
-        transition: 0.25s;
+    .cta-row {
+      margin-top: 22px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
     }
-
-    button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 12px 32px rgba(167,139,250,0.4);
+    .btn {
+      border-radius: 16px;
+      padding: 11px 16px;
+      border: none;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      color: #f9fafb;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow: 0 18px 36px rgba(79,70,229,0.8);
+      transition: transform .16s ease, box-shadow .16s ease;
     }
-</style>
+    .btn-secondary {
+      border-radius: 16px;
+      padding: 11px 16px;
+      border: 1px solid rgba(148,163,184,0.7);
+      font-size: 14px;
+      background: rgba(15,23,42,0.95);
+      color: #e5e7eb;
+      cursor: pointer;
+      transition: border-color .16s ease, background .16s ease;
+    }
+    .btn:hover { transform: translateY(-1px); box-shadow: 0 22px 46px rgba(79,70,229,0.95); }
+    .btn-secondary:hover { border-color: var(--accent); background: rgba(15,23,42,0.98); }
+  </style>
 </head>
-
 <body>
-
 <div class="card">
-    <h1 id="welcome"></h1>
+  <div class="top-row">
+    <div class="title-block">
+      <div id="welcome" class="title"></div>
+      <div class="sub">Here’s how Delivry will personalize every autonomous order for you.</div>
+    </div>
+    <div class="pill">Profile · Allergy Rules</div>
+  </div>
 
-    <div class="label">Your Allergies:</div>
-    <div class="allergy-box" id="allergyBox"></div>
+  <div class="section-title">Allergies</div>
+  <div id="allergyTags" class="tags"></div>
 
-    <button onclick="goToApp()">Open Delivry Agent →</button>
+  <div class="section-title">Other dietary rules</div>
+  <div id="rulesTags" class="tags"></div>
+
+  <div class="cta-row">
+    <button class="btn" onclick="goAgent()">Open Delivry agent →</button>
+    <button class="btn-secondary" onclick="logout()">Log out</button>
+  </div>
 </div>
 
 <script>
-const user = JSON.parse(localStorage.getItem("delivry_user"));
-
-if (!user) {
+  const stored = localStorage.getItem("delivry_user");
+  if (!stored) {
     window.location.href = "signup.html";
-}
+  } else {
+    const user = JSON.parse(stored);
+    document.getElementById("welcome").textContent = `Hi ${user.name},`;
+    const aBox = document.getElementById("allergyTags");
+    const rBox = document.getElementById("rulesTags");
 
-document.getElementById("welcome").innerText = `Welcome, ${user.name}!`;
-
-const box = document.getElementById("allergyBox");
-
-if (user.allergies.length === 0) {
-    box.innerHTML = "<span class='tag'>No allergies selected</span>";
-} else {
-    user.allergies.forEach(a => {
+    if (user.allergies && user.allergies.length) {
+      user.allergies.forEach(a => {
         const tag = document.createElement("div");
         tag.className = "tag";
-        tag.innerText = a;
-        box.appendChild(tag);
-    });
-}
+        tag.textContent = a;
+        aBox.appendChild(tag);
+      });
+    } else {
+      const tag = document.createElement("div");
+      tag.className = "tag";
+      tag.textContent = "None specified";
+      aBox.appendChild(tag);
+    }
 
-function goToApp() {
+    if (user.customRestrictions && user.customRestrictions.length) {
+      user.customRestrictions.forEach(r => {
+        const tag = document.createElement("div");
+        tag.className = "tag";
+        tag.textContent = r;
+        rBox.appendChild(tag);
+      });
+    } else {
+      const tag = document.createElement("div");
+      tag.className = "tag";
+      tag.textContent = "None specified";
+      rBox.appendChild(tag);
+    }
+  }
+
+  function goAgent() {
     window.location.href = "index.html";
-}
+  }
+  function logout() {
+    // keep profile but simulate log out
+    window.location.href = "login.html";
+  }
 </script>
-
 </body>
 </html>
