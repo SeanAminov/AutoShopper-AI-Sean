@@ -1,0 +1,9 @@
+reviews:
+  enable: true
+  auto_review: true
+  reviewers:
+    - "@coderabbitai"
+  settings:
+    language: "en"
+    severity: "medium"
+    max_comments: 15
