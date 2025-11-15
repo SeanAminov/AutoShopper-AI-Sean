@@ -1,96 +1,67 @@
-# AutoShopper-AI
+# AutoShopper AI
 
-AutoShopper AI
+AutoShopper AI is an autonomous shopping assistant that converts natural-language requests into real online actions.  
+Given a user prompt (e.g., *“Find me an iced matcha with oat milk under $12 near 45 Fremont St”*), the system:
 
-AutoShopper AI is an autonomous shopping assistant that converts natural-language requests into real online actions.
-Given a user prompt (e.g., “Find me an iced matcha with oat milk under $12 near 45 Fremont St”), the system:
+- Interprets the request  
+- Navigates the web using an LLM-guided browser agent  
+- Searches nearby cafés and delivery platforms  
+- Evaluates options based on constraints such as price, distance, and rating  
+- Builds the cart and prepares checkout  
+- Returns a structured summary and an actionable checkout link  
 
-Interprets the request
+The project demonstrates a practical, end-to-end autonomous web-navigation agent capable of completing real-world tasks.
 
-Navigates the web using an LLM-guided browser agent
+---
 
-Searches nearby cafés and delivery platforms
+## Features
 
-Evaluates options based on constraints (price, distance, rating)
+### Autonomous Browser Agent
+- Uses **Browser-Use** for LLM-guided automation  
+- Interacts with Google Maps, DoorDash, UberEats, and vendor sites  
 
-Builds the cart and prepares checkout
+### End-to-End Task Execution
+- Understands intent  
+- Locates nearby vendors  
+- Applies constraints  
+- Builds order up to checkout (without submitting payment)
 
-Returns a structured summary and actionable checkout link
+### Structured JSON Output
+The backend returns predictable JSON containing:
 
-The goal is to demonstrate a practical, fully autonomous web-navigation agent capable of completing real-world tasks end-to-end.
+- Restaurant name  
+- Selected item  
+- Total price  
+- Estimated delivery time  
+- Checkout link  
+- Additional metadata  
 
-Features
-Autonomous Browser Agent
+### Modern Frontend Interface
+- Fully responsive  
+- Animated UI  
+- 3D visuals using Three.js  
+- Timeline showing agent progress  
+- Clear result card with checkout link  
 
-Uses Browser-Use (LLM-guided automation) to search, click, extract data, and follow links.
+### API-Driven Architecture
+- Frontend communicates with a lightweight REST API  
+- Browser automation and decision logic run in the backend  
 
-Interacts with Google Maps, DoorDash, UberEats, or direct ordering sites.
+---
 
-End-to-End Task Execution
+## Tech Stack
 
-Understands user intent
+### Frontend
+- HTML, CSS, JavaScript  
+- Three.js  
+- Glassmorphism & responsive design  
 
-Locates nearby vendors
+### Backend
+- Python 3.10  
+- FastAPI  
+- Playwright (Chromium)  
+- Browser-Use agent  
 
-Selects the best option based on constraints
-
-Builds the order up to final checkout (without submitting payment)
-
-Structured JSON Output
-
-The backend returns a predictable JSON response containing:
-
-Restaurant name
-
-Item selected
-
-Total price
-
-Estimated delivery time
-
-Checkout link
-
-Any relevant metadata
-
-This makes the results easy to use in front-end applications or external integrations.
-
-Modern Frontend Interface
-
-Responsive layout
-
-Animated UI with 3D background elements
-
-Timeline to visualize the agent’s progress
-
-Clear result display with checkout link
-
-API-Driven Architecture
-
-Frontend communicates with a lightweight REST API
-
-All computation and browser automation occurs on the backend
-
-Tech Stack
-Frontend
-
-HTML, CSS, JavaScript
-
-Three.js for 3D visuals
-
-Responsive layout with glassmorphism style
-
-Backend
-
-Python 3.10
-
-FastAPI
-
-Playwright (Chromium automation)
-
-Browser-Use agent (LLM-powered control)
-
-Optional Integrations
-
-Sentry for monitoring
-
-Environment-based configuration via .env
+### Optional Integrations
+- Sentry  
+- `.env` configuration  
