@@ -5,27 +5,29 @@ from typing import Dict, List, Any
 
 from openai import OpenAI
 
-client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+from dotenv import load_dotenv 
 
-# ---------- 1) Parse prompt -> constraints ----------
+load_dotenv()
 
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+# 1) Prompt -> constraints
 def parse_prompt_with_llm(prompt: str) -> Dict[str, Any]:
     """
-    Use an LLM to extract structured constraints from the user's prompt.
+    Use an LLM to extract structured ordering constraints from the user prompt.
     """
     system_msg = (
-        "You are an assistant that extracts food-ordering constraints "
-        "from a free-text user prompt. "
-        "Respond ONLY with a JSON object with keys: "
-        "cuisine (string or null), "
-        "max_price (number or null), "
-        "max_distance_km (number or null), "
-        "spice_level (string or null), "
+        "You extract structured food-order constraints from a user prompt. "
+        "Return ONLY a JSON object with keys:\n"
+        "cuisine (string or null),\n"
+        "max_price (number or null, in USD),\n"
+        "max_distance_km (number or null),\n"
+        "spice_level (string or null),\n"
         "dietary (array of strings)."
     )
 
     resp = client.chat.completions.create(
-        model="gpt-4.1-mini",  # or whatever model you have access to
+        model="gpt-4.1-mini",  # or another cheap model you have
         response_format={"type": "json_object"},
         messages=[
             {"role": "system", "content": system_msg},
@@ -37,7 +39,6 @@ def parse_prompt_with_llm(prompt: str) -> Dict[str, Any]:
     try:
         data = json.loads(content)
     except json.JSONDecodeError:
-        # Fallback minimal structure if the LLM glitches
         data = {
             "cuisine": None,
             "max_price": None,
@@ -47,41 +48,35 @@ def parse_prompt_with_llm(prompt: str) -> Dict[str, Any]:
         }
     return data
 
-def select_restaurant_and_item(prompt: str, businesses: List[Dict[str, Any]]) -> Dict[str, Any]:
-    """
-    Given the user's prompt and a list of Yelp businesses (dicts),
-    ask the LLM to pick the best restaurant and suggest an item.
 
-    Returns JSON like:
-      {
-        "restaurant_index": 0,
-        "item_name": "Spicy Chicken Rice Bowl",
-        "estimated_total_price": 13.50
-      }
+# 2) Choose best place + item from Places results
+def select_place_and_item(prompt: str, places: List[Dict[str, Any]]) -> Dict[str, Any]:
     """
-    # Make a compact version of businesses to avoid huge prompts
+    Given the user prompt and a list of Google Places results,
+    ask the LLM to choose the best restaurant and suggest a specific dish.
+    """
     condensed = []
-    for i, b in enumerate(businesses):
+    for i, p in enumerate(places):
         condensed.append({
             "index": i,
-            "name": b.get("name"),
-            "rating": b.get("rating"),
-            "price": b.get("price"),
-            "categories": [c.get("title") for c in b.get("categories", [])],
-            "address": ", ".join(b.get("location", {}).get("display_address", [])),
-            "url": b.get("url"),
+            "name": p.get("name"),
+            "rating": p.get("rating"),
+            "user_ratings_total": p.get("user_ratings_total"),
+            "price_level": p.get("price_level"),
+            "types": p.get("types"),
+            "address": p.get("formatted_address"),
         })
 
     system_msg = (
-        "You are an AI food ordering assistant. "
+        "You are an AI food-ordering assistant. "
         "The user describes what they want to eat. "
-        "You are given a list of candidate restaurants with ratings and categories. "
+        "You are given a JSON list of candidate restaurants from Google Places. "
         "Choose the single best restaurant and suggest a specific dish or drink "
-        "that matches the user's request. "
-        "Respond ONLY with a JSON object with keys: "
-        "restaurant_index (integer), "
-        "item_name (string), "
-        "estimated_total_price (number)."
+        "that matches the user's request.\n\n"
+        "Respond ONLY with a JSON object with keys:\n"
+        "  place_index (integer, index into the list),\n"
+        "  item_name (string),\n"
+        "  estimated_total_price (number, in USD)."
     )
 
     user_msg = (
@@ -99,13 +94,13 @@ def select_restaurant_and_item(prompt: str, businesses: List[Dict[str, Any]]) ->
             {"role": "user", "content": user_msg},
         ],
     )
+
     content = resp.choices[0].message.content
     try:
         data = json.loads(content)
     except json.JSONDecodeError:
-        # Fallback: just pick the first business
         data = {
-            "restaurant_index": 0,
+            "place_index": 0,
             "item_name": "Recommended item",
             "estimated_total_price": 0.0,
         }

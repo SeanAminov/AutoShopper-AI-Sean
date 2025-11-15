@@ -1,18 +1,19 @@
-# main.py
+# backend/main.py
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional, Any, Dict
 import time
 
-from llm_utils import parse_prompt_with_llm, select_restaurant_and_item
-from yelp_client import search_restaurants
+from llm_utils import parse_prompt_with_llm, select_place_and_item
+from google_places_client import search_places, place_to_checkout_url
 
 app = FastAPI()
 
+# CORS: open for hackathon
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],   # hackathon mode
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -20,7 +21,11 @@ app.add_middleware(
 
 class OrderRequest(BaseModel):
     prompt: str
-    location: Optional[str] = None
+    location: Optional[str] = None  # e.g. "San Jose, CA"
+
+@app.get("/health")
+def health() -> Dict[str, bool]:
+    return {"ok": True}
 
 @app.post("/api/order")
 def create_order(req: OrderRequest) -> Dict[str, Any]:
@@ -30,14 +35,14 @@ def create_order(req: OrderRequest) -> Dict[str, Any]:
         if not req.location:
             return {"status": "error", "error": "Location is required."}
 
-        # 1) LLM parses constraints
+        # 1) LLM: understand the prompt
         constraints = parse_prompt_with_llm(req.prompt)
-        cuisine_term = constraints.get("cuisine") or "food"
+        cuisine = constraints.get("cuisine") or "food"
         max_price = constraints.get("max_price")
 
-        # 2) Map max_price -> Yelp price level
+        # Map max_price -> Google price_level 0–4 (rough heuristic)
         max_price_level = None
-        if max_price:
+        if isinstance(max_price, (int, float)):
             if max_price <= 10:
                 max_price_level = 1
             elif max_price <= 20:
@@ -47,40 +52,43 @@ def create_order(req: OrderRequest) -> Dict[str, Any]:
             else:
                 max_price_level = 4
 
-        # 3) Get Yelp candidates
-        businesses = search_restaurants(
-            term=cuisine_term,
-            location=req.location,
+        # 2) Google Places: search for candidates
+        places = search_places(
+            query=cuisine,
+            location_str=req.location,
             max_price_level=max_price_level,
             limit=5,
         )
-        if not businesses:
+
+        if not places:
             return {
                 "status": "error",
                 "error": "No restaurants found matching your request."
             }
 
-        # 4) Let the LLM choose best restaurant + item
-        selection = select_restaurant_and_item(req.prompt, businesses)
-        idx = selection.get("restaurant_index", 0)
-        if idx < 0 or idx >= len(businesses):
+        # 3) LLM: pick best place + item
+        selection = select_place_and_item(req.prompt, places)
+        idx = selection.get("place_index", 0)
+        if not isinstance(idx, int) or idx < 0 or idx >= len(places):
             idx = 0
 
-        best = businesses[idx]
+        chosen = places[idx]
         item_name = selection.get("item_name", "Recommended item")
         est_price = selection.get("estimated_total_price") or max_price or 0
 
-        display_address = ", ".join(best["location"]["display_address"])
-        yelp_url = best["url"]
+        address = chosen.get("formatted_address", "Address unavailable")
+        place_id = chosen.get("place_id")
+        checkout_url = place_to_checkout_url(place_id) if place_id else ""
 
+        # Response shape that matches your current frontend
         data = {
-            "platform": "Yelp",
-            "restaurant_name": best["name"],
+            "platform": "Google Maps",
+            "restaurant_name": chosen.get("name", "Unknown restaurant"),
             "drink_name": item_name,
             "total_price": est_price,
-            "eta_minutes": 25,  # still fake; you can improve later
-            "restaurant_address": display_address,
-            "checkout_url": yelp_url,
+            "eta_minutes": 25,  # still fake for now
+            "restaurant_address": address,
+            "checkout_url": checkout_url,
         }
 
         return {
