@@ -1,175 +1,304 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Delivry — Sign Up</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-
-<style>
+  <meta charset="UTF-8" />
+  <title>Delivry – Create Your Profile</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-gradient: radial-gradient(circle at 20% 0%, #1f2937 0, #020617 55%, #02010a 100%);
+      --card-bg: rgba(15, 23, 42, 0.88);
+      --border-subtle: rgba(148, 163, 184, 0.4);
+      --accent: #6366f1;
+      --accent-soft: rgba(129, 140, 248, 0.35);
+      --accent-2: #c084fc;
+      --radius-lg: 22px;
+      --radius-md: 14px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-        margin: 0;
-        font-family: 'Inter', sans-serif;
-        background: radial-gradient(circle at 20% 20%, #1e1b4b 0%, #0f1020 60%, #050512 100%);
-        color: white;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
+      min-height: 100vh;
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont;
+      background: var(--bg-gradient);
+      color: #f9fafb;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 24px;
+    }
+    .shell {
+      width: 100%;
+      max-width: 980px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+      gap: 32px;
+    }
+    @media (max-width: 900px) {
+      .shell { grid-template-columns: 1fr; }
+    }
+    .brand-card, .form-card {
+      position: relative;
+      border-radius: var(--radius-lg);
+      background: var(--card-bg);
+      border: 1px solid var(--border-subtle);
+      backdrop-filter: blur(22px);
+      padding: 28px 30px;
+      overflow: hidden;
+      box-shadow: 0 26px 60px rgba(15, 23, 42, 0.9);
+    }
+    .brand-card::before, .form-card::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(129, 140, 248, 0.22), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(56, 189, 248, 0.18), transparent 60%);
+      opacity: 0.9;
+      pointer-events: none;
+    }
+    .brand-card > * , .form-card > * { position: relative; z-index: 1; }
+
+    .brand-mark {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+    .brand-logo {
+      width: 30px;
+      height: 30px;
+      border-radius: 999px;
+      background: conic-gradient(from 140deg, #22c55e, #6366f1, #ec4899, #22c55e);
+      box-shadow: 0 0 18px rgba(129, 140, 248, 0.9);
+    }
+    .brand-name {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+    }
+    .hero-title {
+      font-size: 30px;
+      line-height: 1.2;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+    .hero-sub {
+      font-size: 14px;
+      color: #e5e7eb;
+      opacity: 0.9;
+      max-width: 360px;
+    }
+    .hero-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 22px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 253, 0.75);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: #c7d2fe;
+      background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.7));
+    }
+    .hero-pill-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: #22c55e;
+      box-shadow: 0 0 9px #22c55e;
     }
 
-    .card {
-        width: 400px;
-        background: rgba(255, 255, 255, 0.06);
-        padding: 32px;
-        border-radius: 18px;
-        border: 1px solid rgba(255,255,255,0.12);
-        box-shadow: 0 0 40px rgba(0,0,0,0.22);
-        backdrop-filter: blur(14px);
+    .form-header {
+      margin-bottom: 18px;
     }
-
-    h1 {
-        font-size: 28px;
-        font-weight: 800;
-        margin-bottom: 10px;
-        background: linear-gradient(135deg, #818cf8, #c084fc);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
+    .form-title {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 4px;
     }
-
-    .subtitle {
-        color: #d4d4d8;
-        font-size: 14px;
-        margin-bottom: 24px;
+    .form-sub {
+      font-size: 13px;
+      color: #cbd5f5;
     }
-
-    input {
-        width: 100%;
-        padding: 14px;
-        border-radius: 12px;
-        border: 1px solid rgba(255,255,255,0.15);
-        background: rgba(255,255,255,0.1);
-        color: white;
-        margin-bottom: 16px;
-        outline: none;
-        transition: 0.2s;
+    .field-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: #9ca3af;
+      margin: 14px 0 6px;
     }
-
-    input:focus {
-        border-color: #a78bfa;
-        background: rgba(255,255,255,0.15);
-        box-shadow: 0 0 0 3px rgba(167,139,250,0.25);
+    .input {
+      width: 100%;
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      background: radial-gradient(circle at 0 0, rgba(15, 23, 42, 0.82), rgba(15, 23, 42, 0.96));
+      color: #f9fafb;
+      padding: 11px 13px;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.17s ease, box-shadow 0.17s ease, background 0.17s ease;
+      margin-bottom: 4px;
     }
-
+    .input::placeholder { color: #6b7280; }
+    .input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px var(--accent-soft);
+      background: radial-gradient(circle at 0 0, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.98));
+    }
     .chips {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        margin-bottom: 22px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 4px;
     }
-
     .chip {
-        padding: 8px 16px;
-        background: rgba(255,255,255,0.12);
-        border-radius: 999px;
-        border: 1px solid rgba(255,255,255,0.18);
-        font-size: 13px;
-        cursor: pointer;
-        transition: 0.2s;
-        user-select: none;
+      padding: 7px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      font-size: 12px;
+      color: #e5e7eb;
+      cursor: pointer;
+      user-select: none;
+      background: rgba(15, 23, 42, 0.9);
+      transition: all 0.16s ease;
     }
-
     .chip.selected {
-        background: linear-gradient(135deg, #6366f1, #a855f7);
-        border-color: transparent;
-        box-shadow: 0 0 14px rgba(167,139,250,0.6);
+      border-color: transparent;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow: 0 0 16px rgba(129, 140, 248, 0.8);
     }
-
-    button {
-        width: 100%;
-        padding: 14px;
-        border-radius: 12px;
-        background: linear-gradient(135deg, #6366f1, #a855f7);
-        color: white;
-        border: none;
-        font-size: 16px;
-        font-weight: 700;
-        cursor: pointer;
-        transition: 0.25s;
+    .helper {
+      font-size: 11px;
+      color: #9ca3af;
+      margin-top: 3px;
     }
-
-    button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 12px 32px rgba(167,139,250,0.4);
+    .cta-btn {
+      width: 100%;
+      margin-top: 18px;
+      border-radius: var(--radius-md);
+      border: none;
+      padding: 11px 14px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      color: #f9fafb;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow: 0 18px 36px rgba(79, 70, 229, 0.7);
+      transition: transform 0.16s ease, box-shadow 0.16s ease, filter 0.16s ease;
     }
-
-    .login-link {
-        text-align: center;
-        margin-top: 14px;
-        color: #a5b4fc;
-        font-size: 14px;
+    .cta-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 22px 44px rgba(79, 70, 229, 0.85);
+      filter: brightness(1.03);
     }
-</style>
+    .cta-btn:active {
+      transform: translateY(0);
+      box-shadow: 0 10px 24px rgba(79, 70, 229, 0.7);
+    }
+    .footer-link {
+      margin-top: 10px;
+      font-size: 12px;
+      color: #9ca3af;
+    }
+    .footer-link a {
+      color: #c4b5fd;
+      text-decoration: none;
+    }
+    .footer-link a:hover { text-decoration: underline; }
+  </style>
 </head>
-
 <body>
+<div class="shell">
+  <section class="brand-card">
+    <div class="brand-mark">
+      <div class="brand-logo"></div>
+      <div class="brand-name">DELIVRY</div>
+    </div>
+    <div class="hero-title">A profile that actually matters.</div>
+    <div class="hero-sub">
+      Delivry learns your allergies and dietary rules once, then applies them
+      to every future order. No more “no dairy, no nuts” in every checkout.
+    </div>
+    <div class="hero-pill">
+      <div class="hero-pill-dot"></div>
+      Allergy-aware • AI-driven • Real orders
+    </div>
+  </section>
 
-<div class="card">
-    <h1>Create your Delivry profile</h1>
-    <div class="subtitle">Set your details & allergies once — we handle the rest.</div>
-
-    <input id="name" placeholder="Full Name" />
-    <input id="email" placeholder="Email Address" />
-    <input id="password" type="password" placeholder="Password" />
-
-    <div class="subtitle" style="margin-bottom:8px;">Select Allergies:</div>
-
-    <div class="chips" id="chips">
-        <div class="chip">dairy</div>
-        <div class="chip">nuts</div>
-        <div class="chip">gluten</div>
-        <div class="chip">eggs</div>
-        <div class="chip">soy</div>
-        <div class="chip">shellfish</div>
-        <div class="chip">caffeine</div>
+  <section class="form-card">
+    <div class="form-header">
+      <div class="form-title">Create your Delivry profile</div>
+      <div class="form-sub">We’ll use this to keep every recommendation safe by default.</div>
     </div>
 
-    <button onclick="signUp()">Create Account →</button>
+    <div class="field-label">Name</div>
+    <input id="name" class="input" placeholder="Yug More" />
 
-    <div class="login-link">
-        Already have an account? <a href="login.html" style="color:#c084fc;">Log In</a>
+    <div class="field-label">Email</div>
+    <input id="email" class="input" placeholder="you@example.com" />
+
+    <div class="field-label">Password</div>
+    <input id="password" class="input" type="password" placeholder="••••••••" />
+
+    <div class="field-label">Allergies</div>
+    <div class="chips" id="allergyChips">
+      <div class="chip" data-value="dairy">Dairy</div>
+      <div class="chip" data-value="nuts">Nuts</div>
+      <div class="chip" data-value="gluten">Gluten</div>
+      <div class="chip" data-value="eggs">Eggs</div>
+      <div class="chip" data-value="soy">Soy</div>
+      <div class="chip" data-value="shellfish">Shellfish</div>
+      <div class="chip" data-value="caffeine">Caffeine</div>
     </div>
+    <div class="helper">Tap to toggle. You can always update this later.</div>
+
+    <div class="field-label">Other dietary rules</div>
+    <input id="customRestrictions" class="input"
+           placeholder="low sugar, no spicy food, halal, vegetarian, etc." />
+    <div class="helper">Separate with commas. We’ll pass these directly into the agent’s safety prompt.</div>
+
+    <button class="cta-btn" onclick="handleSignup()">Create profile →</button>
+
+    <div class="footer-link">
+      Already have an account? <a href="login.html">Log in</a>
+    </div>
+  </section>
 </div>
 
 <script>
-const chipEls = document.querySelectorAll(".chip");
-chipEls.forEach(chip => {
-    chip.addEventListener("click", () => {
-        chip.classList.toggle("selected");
-    });
-});
+  const chipEls = document.querySelectorAll(".chip");
 
-function signUp() {
+  chipEls.forEach(chip => {
+    chip.addEventListener("click", () => chip.classList.toggle("selected"));
+  });
+
+  function handleSignup() {
     const name = document.getElementById("name").value.trim();
     const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value.trim();
-
-    const allergies = Array.from(document.querySelectorAll(".chip.selected"))
-                           .map(c => c.innerText);
+    const customRaw = document.getElementById("customRestrictions").value.trim();
 
     if (!name || !email || !password) {
-        alert("Please fill all fields.");
-        return;
+      alert("Please fill in name, email, and password.");
+      return;
     }
 
-    const user = { name, email, password, allergies };
+    const allergies = Array.from(document.querySelectorAll(".chip.selected"))
+      .map(chip => chip.dataset.value);
+
+    const customRestrictions = customRaw
+      ? customRaw.split(",").map(s => s.trim()).filter(Boolean)
+      : [];
+
+    const user = { name, email, password, allergies, customRestrictions };
+
     localStorage.setItem("delivry_user", JSON.stringify(user));
 
     window.location.href = "login.html";
-}
+  }
 </script>
-
 </body>
 </html>
