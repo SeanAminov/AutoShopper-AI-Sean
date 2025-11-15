@@ -2,730 +2,400 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>AutoShopper AI – Autonomous Agent Console</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+<title>Delivry — AI Autonomous Shopping Agent</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
 <style>
-/* ====== GLOBAL ====== */
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  font-family: "Space Grotesk", system-ui, -apple-system, BlinkMacSystemFont;
-  overflow: hidden;
-  background: #020617;
-  color: #e5e7eb;
-}
-canvas#bg {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-}
+    /* GLOBAL */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
 
-/* ====== LAYOUT ====== */
-.main-overlay {
-  position: relative;
-  z-index: 10;
-  width: 100%;
-  height: 100vh;
-  display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1.2fr);
-  gap: 20px;
-  padding: 26px 32px;
-}
-@media (max-width: 960px) {
-  .main-overlay {
-    grid-template-columns: 1fr;
-    padding: 18px 16px;
-  }
-}
-.panel {
-  border-radius: 26px;
-  background: linear-gradient(135deg, rgba(15,23,42,0.9), rgba(15,23,42,0.7));
-  border: 1px solid rgba(148,163,253,0.45);
-  box-shadow: 0 26px 70px rgba(15,23,42,0.95);
-  backdrop-filter: blur(22px);
-  position: relative;
-  overflow: hidden;
-}
-/* REMOVED THE GREEN BLOB — CLEANER LOOK */
-.panel::before {
-  content: "";
-  position: absolute;
-  inset: -40%;
-  background: 
-    radial-gradient(circle at top left, rgba(59,130,246,0.18), transparent 60%);
-  opacity: .6;
-  pointer-events: none;
-}
-.panel-inner {
-  position: relative;
-  z-index: 2;
-  padding: 22px 22px 20px;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
+    body {
+        font-family: 'Inter', sans-serif;
+        background: radial-gradient(circle at 20% 20%, #1e1b4b 0%, #0f1020 65%, #050512 100%);
+        color: white;
+        overflow-x: hidden;
+        min-height: 100vh;
+    }
 
-/* ====== LEFT PANEL ====== */
-.brand-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 14px;
-}
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.brand-icon {
-  width: 28px;
-  height: 28px;
-  border-radius: 11px;
-  background: conic-gradient(from 160deg, #22c55e, #6366f1, #ec4899, #22c55e);
-  box-shadow: 0 0 18px rgba(129,140,248,0.9);
-}
-.brand-name {
-  font-weight: 700;
-  letter-spacing: .16em;
-  font-size: 11px;
-  text-transform: uppercase;
-  color: #c7d2fe;
-}
-.badge {
-  font-size: 11px;
-  padding: 4px 10px;
-  border-radius: 999px;
-  border: 1px solid rgba(129,140,248,0.8);
-  background: radial-gradient(circle at top left, rgba(248,250,252,0.05), rgba(15,23,42,0.96));
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-.badge-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 999px;
-  background: #22c55e;
-  box-shadow: 0 0 10px #22c55e;
-}
-.hero-title {
-  font-size: 28px;
-  font-weight: 600;
-  margin-bottom: 6px;
-}
-.hero-sub {
-  font-size: 13px;
-  color: #e5e7eb;
-  opacity: .8;
-  margin-bottom: 22px;
-  max-width: 430px;
-}
-.field-label {
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: .18em;
-  color: #9ca3af;
-  margin-bottom: 6px;
-}
-textarea, input {
-  width: 100%;
-  border-radius: 16px;
-  border: 1px solid rgba(148,163,253,0.45);
-  background: radial-gradient(circle at top left, rgba(15,23,42,0.8), rgba(15,23,42,0.96));
-  color: #e5e7eb;
-  padding: 14px 14px;
-  font-family: inherit;
-  font-size: 13px;
-  outline: none;
-  resize: none;
-  margin-bottom: 16px;
-  transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
-}
-textarea::placeholder,
-input::placeholder {
-  color: #6b7280;
-}
-textarea:focus,
-input:focus {
-  border-color: #6366f1;
-  box-shadow: 0 0 0 1px rgba(99,102,241,0.6);
-}
-.button-row {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-top: 4px;
-}
-button.primary {
-  flex: 1;
-  border-radius: 16px;
-  border: none;
-  padding: 12px 16px;
-  background: linear-gradient(135deg, #4f46e5, #22c55e);
-  color: #f9fafb;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  display: inline-flex;
-  gap: 10px;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 18px 40px rgba(99,102,241,0.55);
-  transition: transform .17s ease, box-shadow .17s ease, filter .17s ease;
-}
-button.primary:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 22px 50px rgba(79,70,229,0.7);
-  filter: brightness(1.02);
-}
-button.primary:active {
-  transform: translateY(0);
-  box-shadow: 0 10px 24px rgba(79,70,229,0.7);
-}
-button.primary:disabled {
-  opacity: .55;
-  cursor: default;
-  box-shadow: none;
-}
-.pulse-orb {
-  width: 16px;
-  height: 16px;
-  border-radius: 999px;
-  background: radial-gradient(circle at 30% 30%, #e5e7eb, #a855f7);
-  box-shadow: 0 0 18px rgba(168,85,247,0.9);
-  animation: pulse 1.6s ease-in-out infinite;
-}
-@keyframes pulse {
-  0%,100% { transform: scale(1); opacity: .9; }
-  50% { transform: scale(1.15); opacity: 1; }
-}
-.meta-chip {
-  padding: 10px 12px;
-  border-radius: 999px;
-  border: 1px dashed rgba(148,163,253,0.5);
-  font-size: 11px;
-  color: #9ca3af;
-}
-.meta-chip span { color: #e5e7eb; }
-.status-line {
-  margin-top: 16px;
-  min-height: 22px;
-  font-size: 12px;
-  color: #9ca3af;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.status-caret {
-  width: 8px;
-  height: 12px;
-  background: #22c55e;
-  box-shadow: 0 0 8px rgba(34,197,94,0.8);
-  animation: blink 1s steps(2, jump-none) infinite;
-}
-@keyframes blink {
-  0%, 50% { opacity: 1; }
-  50.1%,100% { opacity: 0; }
-}
-.status-text {
-  white-space: nowrap;
-  overflow: hidden;
-  max-width: 100%;
-}
+    /* NAVBAR */
+    .navbar {
+        width: 100%;
+        padding: 22px 42px;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        background: transparent;
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        backdrop-filter: blur(14px);
+    }
 
-/* ====== RIGHT PANEL ====== */
-.timeline-title {
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: .24em;
-  color: #9ca3af;
-  margin-bottom: 12px;
-}
-.steps {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.step {
-  border-radius: 16px;
-  border: 1px solid rgba(30,64,175,0.7);
-  background: radial-gradient(circle at top left, rgba(30,64,175,0.7), rgba(15,23,42,0.98));
-  padding: 10px 11px;
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 10px;
-  align-items: center;
-  opacity: .45;
-  transform: translateY(2px) scale(.99);
-  transition: all .22s ease;
-  font-size: 12px;
-}
-.step-icon {
-  width: 26px;
-  height: 26px;
-  border-radius: 999px;
-  border: 1px solid rgba(191,219,254,0.9);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-}
-.step-main {
-  font-weight: 500;
-  color: #e5e7eb;
-}
-.step-sub {
-  font-size: 11px;
-  color: #cbd5f5;
-  opacity: .9;
-}
-.step.active {
-  opacity: 1;
-  transform: translateY(0) scale(1);
-  box-shadow: 0 14px 32px rgba(30,64,175,0.9);
-}
-.step.active .step-icon {
-  border: none;
-  background: radial-gradient(circle at top, #4f46e5, #22c55e);
-  box-shadow: 0 0 14px rgba(129,140,248,0.9);
-}
-.result-block {
-  margin-top: 22px;
-}
-.result-label {
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: .18em;
-  color: #9ca3af;
-  margin-bottom: 6px;
-}
-.result-card {
-  border-radius: 18px;
-  border: 1px solid rgba(34,197,94,0.7);
-  background: radial-gradient(circle at top left, rgba(34,197,94,0.21), rgba(15,23,42,0.98));
-  padding: 14px 14px 12px;
-  box-shadow: 0 18px 40px rgba(22,163,74,0.85);
-  opacity: 0;
-  transform: translateY(14px) scale(.98);
-  animation: resultIn .5s ease forwards;
-}
-@keyframes resultIn {
-  to { opacity: 1; transform: translateY(0) scale(1); }
-}
-.result-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 8px;
-}
-.result-name {
-  font-size: 16px;
-  font-weight: 600;
-}
-.result-tag {
-  font-size: 11px;
-  padding: 4px 10px;
-  border-radius: 999px;
-  border: 1px solid rgba(187,247,208,0.9);
-  color: #bbf7d0;
-}
-.result-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0,1fr));
-  gap: 10px 14px;
-  font-size: 12px;
-}
-@media (max-width: 600px) {
-  .result-grid { grid-template-columns: 1fr; }
-}
-.res-k {
-  font-size: 11px;
-  letter-spacing: .18em;
-  text-transform: uppercase;
-  color: #bbf7d0;
-  margin-bottom: 3px;
-}
-.res-v {
-  font-size: 13px;
-  color: #ecfdf5;
-}
-.checkout-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  font-weight: 600;
-  margin-top: 10px;
-  padding: 9px 14px;
-  border-radius: 999px;
-  background: linear-gradient(135deg, #22c55e, #16a34a);
-  color: #ecfdf5;
-  text-decoration: none;
-  box-shadow: 0 16px 30px rgba(21,128,61,0.9);
-  transition: transform .17s ease, box-shadow .17s ease;
-}
-.checkout-link:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 20px 36px rgba(22,163,74,1);
-}
-.error-card {
-  margin-top: 10px;
-  border-radius: 14px;
-  padding: 10px 12px;
-  border: 1px solid rgba(248,113,113,0.8);
-  background: rgba(248,113,113,0.18);
-  font-size: 12px;
-  color: #fee2e2;
-}
-@media (max-width: 960px) {
-  .panel { height: auto; }
-}
+    .brand {
+        font-size: 26px;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        background: linear-gradient(135deg, #818cf8, #c084fc);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    /* LAYOUT */
+    .wrapper {
+        width: 100%;
+        padding: 40px 40px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 32px;
+    }
+
+    .left-box, .right-box {
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 20px;
+        padding: 36px;
+        backdrop-filter: blur(18px);
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Subtle glow */
+    .left-box::before, .right-box::before {
+        content: "";
+        position: absolute;
+        width: 380px;
+        height: 380px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(124,58,237,0.22), transparent 70%);
+        top: -160px;
+        left: -160px;
+        z-index: -1;
+        filter: blur(40px);
+    }
+
+    /* HEADER TEXT */
+    .title {
+        font-size: 34px;
+        font-weight: 800;
+        line-height: 1.25;
+        margin-bottom: 16px;
+    }
+
+    .subtitle {
+        font-size: 15px;
+        color: #d4d4d8;
+        margin-bottom: 28px;
+        line-height: 1.6;
+    }
+
+    /* FORM INPUTS */
+    textarea, input {
+        width: 100%;
+        padding: 16px;
+        border-radius: 12px;
+        border: 1px solid rgba(255,255,255,0.15);
+        background: rgba(255,255,255,0.08);
+        color: white;
+        font-size: 15px;
+        margin-bottom: 16px;
+        backdrop-filter: blur(10px);
+        outline: none;
+        transition: 0.2s;
+    }
+
+    textarea:focus, input:focus {
+        border-color: #a78bfa;
+        background: rgba(255,255,255,0.12);
+        box-shadow: 0 0 0 3px rgba(167,139,250,0.25);
+    }
+
+    /* BUTTON */
+    button {
+        width: 100%;
+        padding: 16px;
+        border: none;
+        border-radius: 14px;
+        background: linear-gradient(135deg, #6366f1, #a855f7);
+        color: white;
+        font-weight: 700;
+        font-size: 16px;
+        cursor: pointer;
+        transition: 0.25s;
+        margin-top: 6px;
+    }
+
+    button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 28px rgba(167,139,250,0.35);
+    }
+
+    #loading {
+        margin-top: 16px;
+        font-size: 14px;
+        color: #a5b4fc;
+        display: none;
+    }
+
+    /* TIMELINE */
+    .timeline {
+        display: flex;
+        flex-direction: column;
+        gap: 26px;
+        margin-top: 10px;
+        border-left: 1.8px solid rgba(255, 255, 255, 0.16);
+        padding-left: 20px;
+    }
+
+    .timeline-item {
+        position: relative;
+        opacity: 0.35;
+        transition: 0.4s ease;
+    }
+
+    .timeline-item.active {
+        opacity: 1;
+        transform: translateX(4px);
+    }
+
+    .tl-dot {
+        width: 13px;
+        height: 13px;
+        border-radius: 999px;
+        background: linear-gradient(135deg, #818cf8, #c084fc);
+        position: absolute;
+        left: -28px;
+        top: 3px;
+        box-shadow: 0 0 14px rgba(167,139,250,0.8);
+        transition: 0.25s ease;
+    }
+
+    .timeline-item.active .tl-dot {
+        transform: scale(1.3);
+        box-shadow: 0 0 26px rgba(167,139,250,1);
+    }
+
+    .tl-title {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 4px;
+    }
+
+    .tl-sub {
+        font-size: 13px;
+        color: #b3b3c6;
+    }
+
+    /* RESULTS */
+    .result {
+        margin-top: 36px;
+        display: none;
+    }
+
+    .result-card {
+        padding: 26px;
+        border-radius: 16px;
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.12);
+        backdrop-filter: blur(14px);
+    }
+
+    .res-title {
+        font-size: 22px;
+        font-weight: 700;
+        margin-bottom: 12px;
+    }
+
+    .field-label {
+        font-size: 12px;
+        color: #c8c9d4;
+        text-transform: uppercase;
+        margin-top: 16px;
+        font-weight: 600;
+    }
+
+    .field-value {
+        font-size: 15px;
+        margin-top: 4px;
+    }
+
+    .checkout-btn {
+        display: inline-block;
+        margin-top: 22px;
+        padding: 14px 24px;
+        border-radius: 12px;
+        background: #22c55e;
+        color: white;
+        text-decoration: none;
+        font-weight: 700;
+        transition: 0.25s;
+    }
+
+    .checkout-btn:hover {
+        background: #16a34a;
+        transform: translateY(-2px);
+    }
+
 </style>
 </head>
+
 <body>
-<canvas id="bg"></canvas>
 
-<div class="main-overlay">
-  <div class="panel">
-    <div class="panel-inner">
-      <div class="brand-row">
-        <div class="brand">
-          <div class="brand-icon"></div>
-          <div class="brand-name">AUTOSHOPPER AI</div>
+<div class="navbar">
+    <div class="brand">Delivry</div>
+</div>
+
+<div class="wrapper">
+
+    <!-- LEFT PANEL -->
+    <div class="left-box">
+        <div class="title">One prompt. A complete shopping flow.</div>
+        <div class="subtitle">
+            Describe what you want to buy. Delivry autonomously navigates the web,
+            evaluates items, checks delivery platforms, and prepares a ready-to-checkout order — all in real time.
         </div>
-        <div class="badge">
-          <div class="badge-dot"></div>
-          LIVE AGENT RUN
-        </div>
-      </div>
 
-      <div class="hero-title">One prompt. A complete shopping flow.</div>
-      <div class="hero-sub">
-        Describe what you want to buy. AutoShopper navigates the web, evaluates options,
-        and prepares a ready-to-checkout order in real time.
-      </div>
+        <textarea id="prompt" rows="3"
+        placeholder="Example: Find me a large iced matcha with oat milk under $12 near 45 Fremont St..."></textarea>
 
-      <div class="field-label">Shopping request</div>
-      <textarea id="prompt" rows="3" placeholder="Example: Find me an iced matcha with oat milk under $12 near 45 Fremont St, San Francisco..."></textarea>
+        <input id="location" placeholder="Optional: Enter a specific location (default: 45 Fremont St, SF)" />
 
-      <div class="field-label">Location (optional)</div>
-      <input id="location" placeholder="Default: 45 Fremont St, San Francisco" />
+        <button onclick="runAgent()">Run Autonomous Agent →</button>
 
-      <div class="button-row">
-        <button class="primary" id="runBtn">
-          <div class="pulse-orb"></div>
-          <span>Run Autonomous Agent</span>
-        </button>
-        <div class="meta-chip">
-          Agent budget: <span>~20–30s</span> · Max steps: <span>40</span>
-        </div>
-      </div>
-
-      <div class="status-line">
-        <div class="status-caret"></div>
-        <div class="status-text" id="statusText"></div>
-      </div>
+        <div id="loading">Running the Delivry agent…</div>
     </div>
-  </div>
 
-  <div class="panel">
-    <div class="panel-inner">
-      <div class="timeline-title">AGENT EXECUTION TIMELINE</div>
-      <div class="steps">
-        <div class="step" data-step="1">
-          <div class="step-icon">1</div>
-          <div>
-            <div class="step-main">Parse and structure the request</div>
-            <div class="step-sub">Extracts drink type, budget, location, and preferences.</div>
-          </div>
+    <!-- RIGHT PANEL -->
+    <div class="right-box">
+        <div class="title" style="font-size:22px; font-weight:700;">
+            Agent Execution Timeline
         </div>
-        <div class="step" data-step="2">
-          <div class="step-icon">2</div>
-          <div>
-            <div class="step-main">Search nearby cafés and platforms</div>
-            <div class="step-sub">Uses maps and delivery platforms around the target area.</div>
-          </div>
-        </div>
-        <div class="step" data-step="3">
-          <div class="step-icon">3</div>
-          <div>
-            <div class="step-main">Compare menu options and fees</div>
-            <div class="step-sub">Balances price, distance, rating, and match quality.</div>
-          </div>
-        </div>
-        <div class="step" data-step="4">
-          <div class="step-icon">4</div>
-          <div>
-            <div class="step-main">Build cart and prepare checkout</div>
-            <div class="step-sub">Configures the item and reaches the final confirmation screen.</div>
-          </div>
-        </div>
-        <div class="step" data-step="5">
-          <div class="step-icon">5</div>
-          <div>
-            <div class="step-main">Return a ready-to-click summary</div>
-            <div class="step-sub">Outputs a structured summary with direct checkout link.</div>
-          </div>
-        </div>
-      </div>
 
-      <div class="result-block">
-        <div class="result-label">Result</div>
-        <div id="resultArea"></div>
-      </div>
+        <div class="timeline">
+            <div class="timeline-item" data-step="1">
+                <div class="tl-dot"></div>
+                <div class="tl-title">Parse request</div>
+                <div class="tl-sub">Extract drink, price, location, preferences</div>
+            </div>
+
+            <div class="timeline-item" data-step="2">
+                <div class="tl-dot"></div>
+                <div class="tl-title">Search platforms</div>
+                <div class="tl-sub">Scan cafés, maps, DoorDash, UberEats</div>
+            </div>
+
+            <div class="timeline-item" data-step="3">
+                <div class="tl-dot"></div>
+                <div class="tl-title">Match & compare</div>
+                <div class="tl-sub">Price, distance, ETA, ratings, quality</div>
+            </div>
+
+            <div class="timeline-item" data-step="4">
+                <div class="tl-dot"></div>
+                <div class="tl-title">Build cart</div>
+                <div class="tl-sub">Configure item and prepare checkout</div>
+            </div>
+
+            <div class="timeline-item" data-step="5">
+                <div class="tl-dot"></div>
+                <div class="tl-title">Return summary</div>
+                <div class="tl-sub">Structured JSON + checkout URL</div>
+            </div>
+        </div>
+
+        <div id="result" class="result"></div>
     </div>
-  </div>
 </div>
 
 <script>
-/* ===== 3D BACKGROUND ===== */
-let scene, camera, renderer, shapes = [];
-
-function init3D() {
-  const canvas = document.getElementById("bg");
-  renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-  renderer.setPixelRatio(window.devicePixelRatio || 1);
-  resizeRenderer();
-
-  scene = new THREE.Scene();
-  scene.fog = new THREE.FogExp2(0x020617, 0.07);
-
-  camera = new THREE.PerspectiveCamera(52, window.innerWidth / window.innerHeight, 0.1, 100);
-  camera.position.set(0, 0, 9);
-
-  const ambient = new THREE.AmbientLight(0x818cf8, 0.9);
-  const dir1 = new THREE.DirectionalLight(0x22c55e, 1.1);
-  dir1.position.set(6, 5, 5);
-  const dir2 = new THREE.DirectionalLight(0xec4899, 0.7);
-  dir2.position.set(-7, -4, -6);
-  scene.add(ambient, dir1, dir2);
-
-  const geo1 = new THREE.TorusKnotGeometry(1.8, 0.45, 220, 32, 2, 5);
-  const mat1 = new THREE.MeshPhysicalMaterial({
-    color: 0x4f46e5,
-    metalness: 0.8,
-    roughness: 0.15,
-    transmission: 0.65,
-    thickness: 1.0,
-    clearcoat: 0.9,
-    emissive: 0x1d4ed8,
-    emissiveIntensity: 0.6
-  });
-  const knot = new THREE.Mesh(geo1, mat1);
-  knot.position.set(-2.2, 1.4, -2);
-  scene.add(knot);
-  shapes.push(knot);
-
-  const geo2 = new THREE.IcosahedronGeometry(2.1, 1);
-  const mat2 = new THREE.MeshPhysicalMaterial({
-    color: 0x22c55e,
-    metalness: 0.6,
-    roughness: 0.2,
-    transmission: 0.55,
-    thickness: 1.0,
-    clearcoat: 0.7,
-    emissive: 0x16a34a,
-    emissiveIntensity: 0.6
-  });
-  const ico = new THREE.Mesh(geo2, mat2);
-  ico.position.set(2.3, -1.8, -1);
-  scene.add(ico);
-  shapes.push(ico);
-
-  const starGeo = new THREE.BufferGeometry();
-  const starCount = 260;
-  const positions = new Float32Array(starCount * 3);
-  for (let i = 0; i < starCount * 3; i += 3) {
-    positions[i] = (Math.random() - 0.5) * 28;
-    positions[i+1] = (Math.random() - 0.5) * 20;
-    positions[i+2] = (Math.random() - 0.5) * 26;
-  }
-  starGeo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
-  const starMat = new THREE.PointsMaterial({
-    color: 0x60a5fa,
-    size: 0.07,
-    transparent: true,
-    opacity: 0.75
-  });
-  const stars = new THREE.Points(starGeo, starMat);
-  scene.add(stars);
-  shapes.push(stars);
-
-  animate();
-}
-
-function resizeRenderer() {
-  if (!renderer) return;
-  const w = window.innerWidth;
-  const h = window.innerHeight;
-  renderer.setSize(w, h);
-  if (camera) {
-    camera.aspect = w / h;
-    camera.updateProjectionMatrix();
-  }
-}
-
-function animate() {
-  requestAnimationFrame(animate);
-  const t = performance.now() * 0.0004;
-  shapes.forEach((m, i) => {
-    m.rotation.y += 0.002 + i * 0.0005;
-    m.rotation.x += 0.0013 + i * 0.0003;
-    if (i === 0) m.position.y = Math.sin(t * 2.1) * 0.4 + 1.4;
-    if (i === 1) m.position.x = Math.cos(t * 1.4) * 0.4 + 2.3;
-  });
-  renderer.render(scene, camera);
-}
-
-window.addEventListener("resize", resizeRenderer);
-init3D();
-
-/* ===== AGENT UI LOGIC ===== */
-const stepsEls = Array.from(document.querySelectorAll(".step"));
-const statusTextEl = document.getElementById("statusText");
-const resultArea = document.getElementById("resultArea");
-const runBtn = document.getElementById("runBtn");
-
-const statusMessages = [
-  "Preparing agent context and tools...",
-  "Parsing request and extracting constraints...",
-  "Searching nearby cafés and delivery platforms...",
-  "Comparing candidates by price, rating, and distance...",
-  "Building cart and preparing checkout summary..."
-];
-
-function resetSteps() {
-  stepsEls.forEach(s => s.classList.remove("active"));
-}
-
-function playSteps() {
-  resetSteps();
-  let idx = 0;
-  const interval = setInterval(() => {
-    if (idx >= stepsEls.length) {
-      clearInterval(interval);
-      return;
-    }
-    stepsEls[idx].classList.add("active");
-    idx++;
-  }, 800);
-  return interval;
-}
-
-function typeStatus(text) {
-  statusTextEl.textContent = "";
-  let i = 0;
-  const interval = setInterval(() => {
-    if (i >= text.length) {
-      clearInterval(interval);
-      return;
-    }
-    statusTextEl.textContent += text[i];
-    i++;
-  }, 20);
-  return interval;
-}
+let stepsEls = Array.from(document.querySelectorAll(".timeline-item"));
 
 async function runAgent() {
-  const prompt = document.getElementById("prompt").value.trim();
-  const location = document.getElementById("location").value.trim();
 
-  if (!prompt) {
-    alert("Describe what you want the agent to order.");
-    return;
-  }
+    const prompt = document.getElementById("prompt").value.trim();
+    const location = document.getElementById("location").value.trim();
 
-  runBtn.disabled = true;
-  statusTextEl.textContent = "";
-  resultArea.innerHTML = "";
+    if (!prompt) {
+        alert("Please enter a shopping request.");
+        return;
+    }
 
-  let stepAnim = playSteps();
-  let currentStatusIndex = 0;
-  let statusInterval = setInterval(() => {
-    if (currentStatusIndex >= statusMessages.length) return;
-    typeStatus(statusMessages[currentStatusIndex]);
-    currentStatusIndex++;
-  }, 1600);
+    // Reset timeline UI
+    stepsEls.forEach(el => el.classList.remove("active"));
 
-  const API_URL = "http://127.0.0.1:8000/api/order";
+    const loading = document.getElementById("loading");
+    const result = document.getElementById("result");
+    result.innerHTML = "";
+    result.style.display = "none";
+    loading.style.display = "block";
 
-  let payload;
-  try {
-    const res = await fetch(API_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ prompt, location })
-    });
-    payload = await res.json();
-  } catch (e) {
-    payload = { status: "error", error: "Network error or backend unavailable." };
-  }
+    const API_URL = "http://127.0.0.1:8000/api/order";
 
-  clearInterval(stepAnim);
-  clearInterval(statusInterval);
-  stepsEls.forEach(s => s.classList.add("active"));
+    // Timeline animation
+    let step = 0;
+    let stepInterval = setInterval(() => {
+        if (step < stepsEls.length) {
+            stepsEls[step].classList.add("active");
+            step += 1;
+        } else {
+            clearInterval(stepInterval);
+        }
+    }, 650);
 
-  if (payload.status !== "ok") {
-    typeStatus("Agent run failed. See error details below.");
-    resultArea.innerHTML = `
-      <div class="error-card">
-        <strong>Run failed.</strong><br />
-        ${payload.error || payload.raw_output || "Agent could not complete the flow."}
-      </div>
-    `;
-    runBtn.disabled = false;
-    return;
-  }
+    try {
+        const res = await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ prompt, location })
+        });
 
-  typeStatus("Agent run complete. Optimal option selected.");
+        const data = await res.json();
+        loading.style.display = "none";
 
-  const o = payload.data || {};
-  const platform = o.platform || "Selected platform";
+        if (data.status !== "ok") {
+            result.style.display = "block";
+            result.innerHTML = `<div class="result-card">Error: ${data.error}</div>`;
+            return;
+        }
 
-  resultArea.innerHTML = `
-    <div class="result-card">
-      <div class="result-header">
-        <div class="result-name">${o.restaurant_name || "Selected restaurant"}</div>
-        <div class="result-tag">${platform}</div>
-      </div>
-      <div class="result-grid">
-        <div>
-          <div class="res-k">Item</div>
-          <div class="res-v">${o.drink_name || "N/A"}</div>
-        </div>
-        <div>
-          <div class="res-k">Total price</div>
-          <div class="res-v">${o.total_price ? "$" + o.total_price : "N/A"}</div>
-        </div>
-        <div>
-          <div class="res-k">ETA</div>
-          <div class="res-v">${o.eta_minutes ? o.eta_minutes + " minutes" : "N/A"}</div>
-        </div>
-        <div>
-          <div class="res-k">Address</div>
-          <div class="res-v">${o.restaurant_address || "N/A"}</div>
-        </div>
-      </div>
-      ${
-        o.checkout_url
-          ? `<a href="${o.checkout_url}" target="_blank" class="checkout-link">
-               Open checkout
-               <span>↗</span>
-             </a>`
-          : ""
-      }
-    </div>
-  `;
+        const o = data.data;
 
-  runBtn.disabled = false;
+        result.style.display = "block";
+        result.innerHTML = `
+            <div class="result-card">
+                <div class="res-title">${o.restaurant_name}</div>
+
+                <div class="field-label">Item</div>
+                <div class="field-value">${o.drink_name}</div>
+
+                <div class="field-label">Price</div>
+                <div class="field-value">$${o.total_price}</div>
+
+                <div class="field-label">Delivery ETA</div>
+                <div class="field-value">${o.eta_minutes} minutes</div>
+
+                <div class="field-label">Platform</div>
+                <div class="field-value">${o.platform}</div>
+
+                ${o.checkout_url ? `
+                    <a href="${o.checkout_url}" target="_blank" class="checkout-btn">
+                        Open Checkout
+                    </a>` : ""}
+            </div>
+        `;
+
+    } catch (err) {
+        loading.style.display = "none";
+        result.style.display = "block";
+        result.innerHTML = `<div class="result-card">Agent failed. ${err}</div>`;
+    }
 }
-
-runBtn.addEventListener("click", runAgent);
 </script>
+
 </body>
 </html>
